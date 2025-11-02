@@ -82,14 +82,20 @@ jobs:
       - name: Who am I? (debug OIDC)
         run: aws sts get-caller-identity
 
-      - name: Sync files to S3 (private bucket)
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: siucode-lab-bucket
-          AWS_REGION: ap-southeast-1
-          SOURCE_DIR: ./out
+      # - name: Sync files to S3 (private bucket)
+      #   uses: jakejarvis/s3-sync-action@master
+      #   with:
+      #     args: --delete
+      #   env:
+      #     AWS_S3_BUCKET: siucode-lab-bucket
+      #     AWS_REGION: ap-southeast-1
+      #     SOURCE_DIR: ./out
+      #     AWS_ACCESS_KEY_ID: ${{ steps.aws_creds.outputs.aws-access-key-id }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ steps.aws_creds.outputs.aws-secret-access-key }}
+      #     AWS_SESSION_TOKEN: ${{ steps.aws_creds.outputs.aws-session-token }}
+
+      - name: Sync to S3 (private bucket)
+        run: aws s3 sync ./out s3://siucode-lab-bucket --delete
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
@@ -97,3 +103,6 @@ jobs:
           DISTRIBUTION: ED816HOW2G2J7
           PATHS: "/*"
           AWS_REGION: ap-southeast-1
+          # AWS_ACCESS_KEY_ID: ${{ steps.aws_creds.outputs.aws-access-key-id }}
+          # AWS_SECRET_ACCESS_KEY: ${{ steps.aws_creds.outputs.aws-secret-access-key }}
+          # AWS_SESSION_TOKEN: ${{ steps.aws_creds.outputs.aws-session-token }}
