@@ -10,8 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Clone source code từ GitHub
       - name: Checkout source
         uses: actions/checkout@v4
+
+      # 2️⃣ Cài Node và build Next.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Next 16 hỗ trợ Node 18+, nên dùng 20 cho ổn định
 
       # Nếu website là Next.js static export thì thêm:
       - name: Build static files
@@ -33,7 +40,7 @@ jobs:
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: E123ABC456XYZ # ID thật của sếp (xem trong CloudFront)
+          DISTRIBUTION: ED816HOW2G2J7 # ID (xem trong CloudFront)
           PATHS: "/*"
           AWS_REGION: ap-southeast-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
