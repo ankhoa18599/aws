@@ -1,23 +1,56 @@
-// app/page.tsx
 "use client";
-import {useEffect, useState} from "react";
+
+import {useState, useEffect} from "react";
 
 export default function Home() {
-  const [data, setData] = useState<unknown>(null);
+  const [message, setMessage] = useState<string>("Loading...");
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   useEffect(() => {
-    fetch(
-      "https://7w6y7nij1a.execute-api.ap-southeast-1.amazonaws.com/prod/hello"
-    )
-      .then((r) => r.json())
-      .then(setData)
-      .catch(console.error);
+    const fetchData = async () => {
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/hello`;
+
+        const res = await fetch(apiUrl);
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        setMessage(data.message);
+        setDebugInfo(JSON.stringify(data, null, 2));
+      } catch (error: any) {
+        setMessage("Failed to fetch data");
+        setDebugInfo(error.toString());
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
-    <main style={{padding: 24}}>
-      <h1>SiuCode x AWS – Hello API</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </main>
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 font-sans">
+      <h1 className="text-4xl font-bold mb-4">AWS Serverless Demo</h1>
+
+      <div className="p-6 border rounded-lg shadow-lg bg-gray-50 max-w-md w-full">
+        <h2 className="text-xl font-semibold mb-2 text-gray-700">
+          API Response:
+        </h2>
+
+        {/* Dòng này sẽ hiện "Hello Khoa..." nếu thành công */}
+        <p className="text-2xl text-green-600 font-bold mb-4">{message}</p>
+
+        <details>
+          <summary className="cursor-pointer text-sm text-gray-500">
+            View Debug Info
+          </summary>
+          <pre className="mt-2 text-xs bg-gray-800 text-white p-2 rounded overflow-auto">
+            {debugInfo}
+          </pre>
+        </details>
+      </div>
+    </div>
   );
 }
