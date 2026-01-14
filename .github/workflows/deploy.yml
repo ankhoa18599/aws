@@ -69,6 +69,8 @@ jobs:
           node-version: 20
 
       - name: Install & Build & Export
+        env: # <--- Thêm đoạn này
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: |
           yarn install --frozen-lockfile
           yarn build
